@@ -16,6 +16,8 @@ func main() {
 
 	Outra maneira que também existe é a declaração de variável curta, não sendo necessário explicitar que é uma variável e nem a tipagem, EX: nome := "Meu nome é Gabriel".
 	*/
+
+	// showNames()
 	showIntroduce()
 
 	showMenu()
@@ -102,3 +104,24 @@ func initializeMonitoring() {
 func showNamesAndAge() (string, int) {
 	return "Gabriel", 24
 }
+
+//Não existe WHILE no GOLANG, para utilizar loop infinito deve-se usar o FOR { }
+/*Em GO, temos o array que devemos declarar da seguinte maneira: var sites [4]string, porém não trabalhamos necessariamente
+com arrays e sim com slice, pois não tem tamanho fixo
+*/
+
+// func showNames() {
+// 	names := []string{
+// 		"Gabriel", "Marcos", "Neto",
+// 	}
+// 	fmt.Println(names)
+
+// 	names = append(names, "Vinicius")
+// 	fmt.Println("Qty: ", cap(names), " ", names)
+// }
+
+/* A utilização do CAP no lugar do APPEND é melhor, pois evita utilizar uma nova alocação de memória.
+Em resumo a função cap em Go retorna a capacidade atual do slice, que é o número total de elementos que o slice pode
+acomodar sem alocar mais memória. Quando você usa a função append e a capacidade atual do slice é excedida, Go aloca mais memória para o slice.
+O interessante aqui é que Go não apenas aloca memória para o novo elemento, mas também adiciona algum espaço extra para acomodar futuros elementos,
+para evitar a alocação de memória a cada chamada de append. Isso é feito para melhorar o desempenho.*/
