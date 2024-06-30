@@ -1,0 +1,3 @@
+
+https://www.alura.com.br true 30/06/2024 14:27:33
+https://random-status-code.herokuapp.com/ false 30/06/2024 14:27:34

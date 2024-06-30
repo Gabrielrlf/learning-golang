@@ -1,9 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
+	"time"
 )
 
 //Temos como declarar uma CONST dentro do GOLANG, não sendo possivel ser alterada.
@@ -48,11 +54,11 @@ func main() {
 	case 1:
 		initializeMonitoring()
 	case 2:
-		fmt.Println("Showing logs...")
+		showLogs()
 	case 3:
 		exitProgramm()
 	default:
-		fmt.Println("Idk the command...")
+		fmt.Println("Comando não reconhecido...")
 		os.Exit(-1)
 	}
 }
@@ -75,7 +81,6 @@ func readCommand() int {
 }
 
 func showMenu() {
-	readFileSite()
 	fmt.Println("------------- / ------------- /")
 	fmt.Println("1 - Inicializando monitoramento")
 	fmt.Println("2 - Visualizar logs")
@@ -91,7 +96,7 @@ func exitProgramm() {
 func initializeMonitoring() {
 	fmt.Println("Monitoring...")
 
-	sites := []string{"https://www.alura.com.br", "https://random-status-code.herokuapp.com/", "https://www.caelum.com.br"}
+	sites := readFileSite()
 
 	//Você pode declarar o FOR assim:
 	// for i := 0; i < len(sites); i++ {
@@ -142,21 +147,63 @@ func checkSite(site string) {
 
 	if response.StatusCode == 200 {
 		fmt.Println("O site ", site, "está online com sucesso!")
+
+		registerLog(site, true)
 	} else {
 		fmt.Println("O site ", site, "está com problema!")
+
+		registerLog(site, false)
 	}
 }
 
 func readFileSite() []string {
 	var sites []string
 	files, err := os.Open("site.txt")
+	// files, err := ioutil.ReadFile("site.txt")
 
 	if err != nil {
 		fmt.Println("Ocorreu um erro ", err)
 	}
-	fmt.Println(files)
 
+	//O GO faz a conversão de array de bytes diretamente para o string
+	reader := bufio.NewReader(files)
+
+	for {
+		row, err := reader.ReadString('\n')
+
+		row = strings.TrimSpace(row)
+
+		if err == io.EOF {
+			break
+		}
+		sites = append(sites, row)
+	}
+
+	files.Close()
 	return sites
 }
 
-//NIL em GOLANG significa o equivalente a NULO
+//NIL em GOLANG significa o equivalente ao NULO
+
+func registerLog(site string, status bool) {
+	file, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+
+	if err != nil {
+		fmt.Println("Ocorreu um erro ao salvar")
+	}
+
+	//Para formatação de hora o GO tem uma diferença para formatação dessas datas - Para verificar,
+	//é valido ir na doc do timeformat da golang
+	file.WriteString("\n" + site + " " + strconv.FormatBool(status) + " " + time.Now().Format("02/01/2006 15:04:05"))
+	file.Close()
+}
+
+func showLogs() {
+	files, err := ioutil.ReadFile("log.txt")
+
+	if err != nil {
+		fmt.Println("Erro ao ler o arquivo logs.txt")
+	}
+
+	fmt.Println(string(files))
+}
